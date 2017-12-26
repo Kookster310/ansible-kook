@@ -1,0 +1,2 @@
+---
+- include_vars: login_credentials.yml
