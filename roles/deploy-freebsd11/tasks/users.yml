@@ -1,0 +1,9 @@
+---
+- name: Create Ansible User
+
+- name: Update root .vimrc
+    src: /etc/ansible/files/vimrc
+    dest: /home/root/.vimrc
+    owner: root
+    group: foo
+    mode: u=rw,g=r,o=r

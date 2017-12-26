@@ -1,0 +1,8 @@
+---
+ansible_name: ansible
+ansible_pass: lZ44#g0Tv!f(YoQfJalA
+ansible_ssh_key_file: /etc/ansible/files/keys/ansible_key
+
+user1_name: dryan
+user1_pass: 1h&F3Ji*n%(jk#!
+user1_ssh_key_file: /etc/ansible/files/keys/dryan_key
