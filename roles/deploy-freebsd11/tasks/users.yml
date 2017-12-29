@@ -1,7 +1,22 @@
 ---
-- name: Create Ansible User
+- name: Create Necessary Users
+  user:
+    createhome: yes
+    group: '{{ user1_group }}'
+    name: '{{ user1_name }}'
+    password: '{{ user1_pass }}'
+    state: present
+    system: yes
+    update_password: on_create
+
+- name: Add Public key
+  authorized_key:
+    user: '{{ user1_name }}'
+    key: '{{ user1_pub_key }}'
+
 
 - name: Update root .vimrc
+- copy:
     src: /etc/ansible/files/vimrc
     dest: /home/root/.vimrc
     owner: root

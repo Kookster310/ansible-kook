@@ -1,2 +1,5 @@
 ---
 - include_vars: login_credentials.yml
+- include_vars: users_vars.yml
+
+- include: users.yml
