@@ -20,3 +20,17 @@
       regexp: '^ansible ALL\='
       line: 'ansible ALL=(ALL) NOPASSWD:ALL'
       validate: 'visudo -cf %s'... 
+
+  - name: Disable Root Login
+      path: /etc/ssh/sshd_config
+      state: present
+      regexp: '^PermitRootLogin'
+      line: 'PermitRootLogin no'
+      insertafter: EOF
+    register: ssh_config
+
+  - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted
+      when: ssh_config.changed 
