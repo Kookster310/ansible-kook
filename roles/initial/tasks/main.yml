@@ -1,0 +1,22 @@
+---
+- hosts: all
+  user: root
+  tasks:
+  - name: Create Ansible User
+    user:
+      name: ansible
+      state: present
+
+  - name: Add Ansible User SSH Public Key
+    authorized_key:
+      user: ansible
+      key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCl1zTKX9/trGCV/Nlnm+MsD4vi1Nya44dh4fvK7gQ9voFqjVtyJGIBF3DL9/BjtREgj+tIjD87fVdTaqsmkOBX1S5Cqy7lDFqnVBnjPki41BguhQ65TAI/CWqZdgufcKztlbBIbHhjbLPqm3Qvrzqeb/un6VptsjYJ9c0ESglxO4Q7PAXbq+30t6fYUZpZIAfdei5Te6YuU+4XbPcE6Skb19fC2Z76An7UKR3NW/vvwB3IkaJLSnfwF6uCAPVpU/c9giXHgr8Emv+Y37WA5nPUMHpHuOa2XTil02yRyT2QDG2ARDnrl3o36FJgH/JawP8sHmnxyMV19JwJnclBnN+YrnTDDdTLYJmv+XA5qlCB8viv62EWpGqNPR9SGGE2D8SdOnWMR62qjJxWHtqoWs6nUM1nBw3hORakdeS1/eisSMmKIy3dGC4stdiJo05BAt76BUcE3fdeRH6wyf6A1VpQWBLRjahXsMAsIzFnFwAZkAHnOSsY1jyEhI6HWNMI3GL1jCkUjlbq7d+FbBED4JioI+s8/YgO5ZYNSA+5yN1d6itiVj0z0azadfmZustqGv4XFeaDRARrCES7vfI5F7EhkhQNxzagVWRrXQtG/ZYpvsn8ElElpojDlkOazB/uxwyMT0Gh+NYNFT8lx72xNOAEjGXynPev51CcUoobnkfDOQ== dany0@do-nyc1.310networks.com
+      state: present
+
+  - name: Ensure ansible user is in sudoers with no pass required
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^ansible ALL\='
+      line: 'ansible ALL=(ALL) NOPASSWD:ALL'
+      validate: 'visudo -cf %s'... 
