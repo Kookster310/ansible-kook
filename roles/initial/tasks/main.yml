@@ -17,10 +17,10 @@
     key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+g68qreSoiG66ItvI9ggwC7yZdgUZcPnHAjbHtGyTgLaQTZZx7SYewMhGN3uhYAOXSnAKpaZh1Z+HNkcbuJJfpGGJm/Yp18JYAHyAKG/kuKFxeEmmB0ECfdwg16cDZlBCjSq85afGqQT0J0WwnFgPs3or9zGkWOqAsHI4PaKsXxGhB3xnwRvitli0dYiFvox/3tpwJwfx5WR/82IYvX9ATu5YFMYZ1MO1HUyAtMngRx1kRHujOGCQJ3cr/qgf0dGKTsIl+G6k1+MbnPlcqUFBnXLl3i8hvnYAO+e0f1xGd4odG85CKBL7F7ltKDl8oKAuuEI6QkHLFQxAiF1vbJkz dany0@do-nyc1.310networks.com
     state: present
   
-- name: Ensure ansible user is in sudoers with no pass required
+- name: Ensure ansible user is in /usr/local/etc/sudoers with no pass required
   remote_user: root
   lineinfile:
-    dest: /etc/sudoers
+    dest: /usr/local/etc/sudoers
     state: present
     regexp: '^ansible ALL\='
     line: 'ansible ALL=(ALL) NOPASSWD:ALL'
