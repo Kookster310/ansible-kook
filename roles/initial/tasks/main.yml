@@ -1,36 +1,77 @@
 ---
-- hosts: all
-  user: root
-  tasks:
-  - name: Create Ansible User
-    user:
-      name: ansible
-      state: present
+- name: Create symlink between python2.7 to python
+  remote_user: root
+  raw: ln -s /usr/local/bin/python2.7 /usr/bin/python
+  ignore_errors: yes
 
-  - name: Add Ansible User SSH Public Key
-    authorized_key:
-      user: ansible
-      key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCl1zTKX9/trGCV/Nlnm+MsD4vi1Nya44dh4fvK7gQ9voFqjVtyJGIBF3DL9/BjtREgj+tIjD87fVdTaqsmkOBX1S5Cqy7lDFqnVBnjPki41BguhQ65TAI/CWqZdgufcKztlbBIbHhjbLPqm3Qvrzqeb/un6VptsjYJ9c0ESglxO4Q7PAXbq+30t6fYUZpZIAfdei5Te6YuU+4XbPcE6Skb19fC2Z76An7UKR3NW/vvwB3IkaJLSnfwF6uCAPVpU/c9giXHgr8Emv+Y37WA5nPUMHpHuOa2XTil02yRyT2QDG2ARDnrl3o36FJgH/JawP8sHmnxyMV19JwJnclBnN+YrnTDDdTLYJmv+XA5qlCB8viv62EWpGqNPR9SGGE2D8SdOnWMR62qjJxWHtqoWs6nUM1nBw3hORakdeS1/eisSMmKIy3dGC4stdiJo05BAt76BUcE3fdeRH6wyf6A1VpQWBLRjahXsMAsIzFnFwAZkAHnOSsY1jyEhI6HWNMI3GL1jCkUjlbq7d+FbBED4JioI+s8/YgO5ZYNSA+5yN1d6itiVj0z0azadfmZustqGv4XFeaDRARrCES7vfI5F7EhkhQNxzagVWRrXQtG/ZYpvsn8ElElpojDlkOazB/uxwyMT0Gh+NYNFT8lx72xNOAEjGXynPev51CcUoobnkfDOQ== dany0@do-nyc1.310networks.com
-      state: present
+- name: Create Ansible User
+  remote_user: root
+  user:
+    name: ansible
+    state: present
+  
+- name: Add Ansible User SSH Public Key
+  remote_user: root
+  authorized_key:
+    user: ansible
+    key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+g68qreSoiG66ItvI9ggwC7yZdgUZcPnHAjbHtGyTgLaQTZZx7SYewMhGN3uhYAOXSnAKpaZh1Z+HNkcbuJJfpGGJm/Yp18JYAHyAKG/kuKFxeEmmB0ECfdwg16cDZlBCjSq85afGqQT0J0WwnFgPs3or9zGkWOqAsHI4PaKsXxGhB3xnwRvitli0dYiFvox/3tpwJwfx5WR/82IYvX9ATu5YFMYZ1MO1HUyAtMngRx1kRHujOGCQJ3cr/qgf0dGKTsIl+G6k1+MbnPlcqUFBnXLl3i8hvnYAO+e0f1xGd4odG85CKBL7F7ltKDl8oKAuuEI6QkHLFQxAiF1vbJkz dany0@do-nyc1.310networks.com
+    state: present
+  
+- name: Ensure ansible user is in sudoers with no pass required
+  remote_user: root
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^ansible ALL\='
+    line: 'ansible ALL=(ALL) NOPASSWD:ALL'
 
-  - name: Ensure ansible user is in sudoers with no pass required
-    lineinfile:
-      dest: /etc/sudoers
-      state: present
-      regexp: '^ansible ALL\='
-      line: 'ansible ALL=(ALL) NOPASSWD:ALL'
-      validate: 'visudo -cf %s'... 
+- name: Disable Root Login
+  remote_user: root
+  lineinfile:  
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+  register: ssh_config
 
-  - name: Disable Root Login
-      path: /etc/ssh/sshd_config
-      state: present
-      regexp: '^PermitRootLogin'
-      line: 'PermitRootLogin no'
-      insertafter: EOF
-    register: ssh_config
+- name: Remove without password
+  remote_user: root
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: absent
+    regexp: '^PermitRootLogin without-password'
+  register: ssh_config
 
-  - name: Restart SSH
-      service:
-        name: ssh
-        state: restarted
-      when: ssh_config.changed 
+- name: Disable Password Authentication
+  remote_user: root
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+    insertafter: EOF
+  register: ssh_config
+
+- name: Copy over 310 Networks SSH Welcome Banner
+  remote_user: root
+  copy:
+    src: /etc/ansible/files/misc/sshd-banner
+    dest: /etc/ssh/sshd-banner
+    owner: root
+    group: wheel
+
+- name: Use 310 Networks SSH Banner
+  remote_user: root
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^Banner'
+    line: 'Banner /etc/ssh/sshd-banner'
+    insertafter: EOF
+  register: ssh_config
+
+- name: Restart SSH
+  remote_user: root
+  service:
+    name: sshd
+    state: restarted
