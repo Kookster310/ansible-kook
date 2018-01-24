@@ -1,0 +1,35 @@
+- name: Install EPEL
+  become: true
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install bird
+  become: true
+  yum:
+    name: bird
+    state: present
+
+- name: Create /etc/bird/ dir
+  become: true
+  raw: mkdir /etc/bird 
+
+- name: Update bird.conf
+  become: true
+  template:
+    src: ../templates/bird/bird.conf.j2
+    dest: /etc/bird/bird.conf
+    owner: root
+    group: wheel
+
+- name: Update local4.conf
+  become: true
+  template:
+    src: ../templates/bird/local4.conf
+    dest: /etc/bird/local4.conf
+    owner: root
+    group: wheel
+
+- name: SymLink /etc/bird/bird.conf to /etc/bird.conf
+  become: true
+  raw: rm -rf /etc/bird.conf; ln -s /etc/bird/bird.conf /etc/bird.conf
