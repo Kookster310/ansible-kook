@@ -1,0 +1,14 @@
+---
+- name: Install Bird
+  become: true
+  portinstall:
+    name: bird
+    state: present
+
+- name: Update bird.conf
+  become: true
+  template:
+    src: templates/bird/bird.conf.j2
+    dest: /etc/bird/bird.conf
+    owner: root
+    group: root4
