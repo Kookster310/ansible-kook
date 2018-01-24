@@ -1,0 +1,8 @@
+---
+ansible_host: 139.59.191.197
+hostname: do-lhr1.310networks.com
+dn42_network: 172.20.15.160/27
+dn42_ip: 172.20.15.161
+dn42_asn: 4242423310
+dn42_netmask: 255.255.255.224
+dn42_if_name: eth0:0
