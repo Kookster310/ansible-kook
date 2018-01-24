@@ -5,4 +5,4 @@ dn42_network: 172.20.15.160/27
 dn42_ip: 172.20.15.161
 dn42_asn: 4242423310
 dn42_netmask: 255.255.255.224
-dn42_if_name: eth0:0
+dn42_ifname: eth0:0
