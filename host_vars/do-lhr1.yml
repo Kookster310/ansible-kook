@@ -1,5 +1,5 @@
 ---
-ansible_host: 139.59.191.197
+ansible_host: 165.227.235.191
 hostname: do-lhr1.310networks.com
 dn42_network: 172.20.15.160/27
 dn42_ip: 172.20.15.161
