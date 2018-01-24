@@ -32,6 +32,18 @@
     owner: root
     group: wheel
 
+- name: Create peers4 dir
+  become: true
+  file:
+    path: /etc/bird/peers4
+    state: directory
+
+- name: Create peers6 dir
+  become: true
+  file:
+    path: /etc/bird/peers6
+    state: directory
+
 - name: SymLink /etc/bird/bird.conf to /etc/bird.conf
   become: true
   raw: rm -rf /etc/bird.conf; ln -s /etc/bird/bird.conf /etc/bird.conf
@@ -45,6 +57,10 @@
     owner: root
     group: wheel
 
-- name: restart network services
+- name: Restart network services
   become: true
   raw: systemctl restart network
+
+- name: Start Bird
+  become: true
+  raw: systemctl start bird
