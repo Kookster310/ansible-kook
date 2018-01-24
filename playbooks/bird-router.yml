@@ -2,5 +2,4 @@
 - hosts: all
   gather_facts: False
   roles:
-#     - initial
-     - bird-router-bsd
+     - bird-router
