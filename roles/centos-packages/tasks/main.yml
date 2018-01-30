@@ -1,0 +1,10 @@
+- name: Install Basic Packages
+  become: true
+  yum: pkg={{item}} state=present
+  with_items:
+   - epel-release
+   - npm
+   - nodejs
+   - vim
+   - git
+
