@@ -1,7 +1,7 @@
 ---
 # Network Variables
-ansible_host: 198.199.87.232
-private_ip: 10.136.74.47
+ansible_host: 165.227.85.19
+private_ip: 10.136.27.246
 hostname: ha2-jfk1.310networks.com
 dns1: 9.9.9.9
 dns2: 8.8.8.8

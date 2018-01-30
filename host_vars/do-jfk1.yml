@@ -1,6 +1,7 @@
 ---
 # Network Variables
 ansible_host: 67.205.142.163
+private_ip: 10.136.15.241
 hostname: do-jfk1.310networks.com
 dns1: 9.9.9.9
 dns2: 8.8.8.8
