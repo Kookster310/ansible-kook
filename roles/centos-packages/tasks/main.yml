@@ -8,3 +8,8 @@
    - vim
    - git
 
+- name: Install Development Tools package group
+  become: true
+  yum:
+    name: "@Development tools"
+    state: present
