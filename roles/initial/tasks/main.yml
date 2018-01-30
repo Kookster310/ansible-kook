@@ -43,6 +43,24 @@
     regexp: '^ansible ALL\='
     line: 'ansible ALL=(ALL) NOPASSWD:ALL'
 
+- name: Ensure dryan user is in /usr/local/etc/sudoers with no pass required (FreeBSD)
+  remote_user: root
+  when: ansible_distribution == "FreeBSD"
+  lineinfile:
+    dest: /usr/local/etc/sudoers
+    state: present
+    regexp: '^dryan ALL\='
+    line: 'dryan ALL=(ALL) NOPASSWD:ALL'
+
+- name: Ensure dryan user is in /etc/sudoers with no pass required (CentOS)
+  remote_user: root
+  when: ansible_distribution == "CentOS"
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^dryan ALL\='
+    line: 'dryan ALL=(ALL) NOPASSWD:ALL'
+
 - name: Disable Root Login
   remote_user: root
   lineinfile:  
