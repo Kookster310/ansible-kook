@@ -6,6 +6,8 @@ hostname: ha2-jfk1.310networks.com
 dns1: 9.9.9.9
 dns2: 8.8.8.8
 
+#node-cryptonote-pool Variables
+
 # DN42 Variables
 dn42_network: 172.20.15.160/27
 dn42_ip: 172.20.15.169
