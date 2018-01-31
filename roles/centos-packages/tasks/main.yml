@@ -7,6 +7,10 @@
    - nodejs
    - vim
    - git
+   - openssl-devel
+   - boost
+   - boost-devel
+   - boost-doc
 
 - name: Install Development Tools package group
   become: true
