@@ -1,4 +1,0 @@
----
-- include_vars: users.yml
-
-- include: users.yml
