@@ -12,53 +12,6 @@
     key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+g68qreSoiG66ItvI9ggwC7yZdgUZcPnHAjbHtGyTgLaQTZZx7SYewMhGN3uhYAOXSnAKpaZh1Z+HNkcbuJJfpGGJm/Yp18JYAHyAKG/kuKFxeEmmB0ECfdwg16cDZlBCjSq85afGqQT0J0WwnFgPs3or9zGkWOqAsHI4PaKsXxGhB3xnwRvitli0dYiFvox/3tpwJwfx5WR/82IYvX9ATu5YFMYZ1MO1HUyAtMngRx1kRHujOGCQJ3cr/qgf0dGKTsIl+G6k1+MbnPlcqUFBnXLl3i8hvnYAO+e0f1xGd4odG85CKBL7F7ltKDl8oKAuuEI6QkHLFQxAiF1vbJkz dany0@do-nyc1.310networks.com
     state: present
   
-- name: Create dryan User
-  remote_user: root
-  user:
-    name: dryan
-    state: present
-
-- name: Add dryan User SSH Public Key
-  remote_user: root
-  authorized_key:
-    user: dryan
-    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDeTr1MGno1koz2taEastgfV8PACnG/B9xgDK7TaAegZ dryan@310networks
-    state: present
-
-- name: Create akaufman User
-  remote_user: root
-  user:
-    name: akaufman
-    state: present
-
-- name: Add akaufman User SSH Public Key
-  remote_user: root
-  authorized_key:
-    user: akaufman
-    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHXNWSdnnASCy3RQJZZ6CF25BfITgjAIrWZB+lNCZhzF aaron@foo
-    state: present
-
-- name: Add akaufman key2
-  remote_user: root
-  authorized_key:
-    user: akaufman
-    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXcEqEAMU6QotyBROzOzuidXkqiCAvnI7kY6o7gRiqe aaron@workstation
-    state: present
-
-- name: Create mcarny User
-  remote_user: root
-  user:
-    name: mczarny
-    state: present
-
-- name: Add mczarny User SSH Public Key
-  remote_user: root
-  authorized_key:
-    user: mczarny
-    key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC76OPgktAxorkY0sTs04r+yoVnZTyiwDmgZmKbThnuizFEncR8oK9h57I1fSH/v18RojiUyCakW+lcpa/4zcJ9YEMn52okeWIgKx01rDORSO2Su675Pn+CeZm3WuXeEzL0eF/lPEbbfFUyqTtpzUHn70G3v62Wb2Vj4ZrxGUEK+1vbfOHtlDic4vKzbtC3NqwiO9AtgpgdIsHGOMO0W3FyxaTiD8rsmIr/FNHkm7UfDNuLBj+SkmO/ZrusowEFs1if/t33rbp2sNnvl6g5sOtJ+mz8lYxY0NR+yYCLUyvTAz+i0DsEAORTaN5uH+5saLmJlDSv/9TlmjjmBs82fMKxmGEA4dc/Si0t1DYXKnsXpDbUM52JRqsytZPdLOeszkTicMRmY8BBJ64zR3gXql14XKbkQHXP9gKJQSmjhlLTPXKSzL5u3kY6t3neTXdJeBlJUCIbyYc2R6vBevggEnr/E2DV9TN2n9bYdkma58jYk+geeguOQI8+rmgwzOQTa3Hh7Cjt3FMU5vHP0Tikdq79EVtOEE/NBodJ5L+np3iQnqEOnjKQWK+i77FXRWuU27FgLIrv2EF/etI6tsXuDF5sSFhy1cBVbbwGoKhLgUZMII/8FoxfaGX3qaXLCb62hUT9b9HP9ZToaavtCaBupgUSgYhN2wlx9ZyuGpO2hdKAPQ== me@r3lik.com
-    state: present
-
-
 - name: Ensure ansible user is in /usr/local/etc/sudoers with no pass required
   remote_user: root
   when: ansible_distribution == "FreeBSD"
@@ -77,8 +30,30 @@
     regexp: '^ansible ALL\='
     line: 'ansible ALL=(ALL) NOPASSWD:ALL'
 
-- name: Ensure dryan user is in /usr/local/etc/sudoers with no pass required (FreeBSD)
+- name: Ensure ansible user is in /etc/sudoers with no pass required
   remote_user: root
+  when: ansible_distribution == "Ubuntu"
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^ansible ALL\='
+    line: 'ansible ALL=(ALL) NOPASSWD:ALL'
+
+- name: Create dryan User
+  become: true
+  user:
+    name: dryan
+    state: present
+
+- name: Add dryan User SSH Public Key
+  become: true
+  authorized_key:
+    user: dryan
+    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDeTr1MGno1koz2taEastgfV8PACnG/B9xgDK7TaAegZ dryan@310networks
+    state: present
+
+- name: Ensure dryan user is in /usr/local/etc/sudoers with no pass required (FreeBSD)
+  become: true
   when: ansible_distribution == "FreeBSD"
   lineinfile:
     dest: /usr/local/etc/sudoers
@@ -87,7 +62,7 @@
     line: 'dryan ALL=(ALL) NOPASSWD:ALL'
 
 - name: Ensure dryan user is in /etc/sudoers with no pass required (CentOS)
-  remote_user: root
+  become: true
   when: ansible_distribution == "CentOS"
   lineinfile:
     dest: /etc/sudoers
@@ -95,8 +70,51 @@
     regexp: '^dryan ALL\='
     line: 'dryan ALL=(ALL) NOPASSWD:ALL'
 
+- name: Ensure dryan user is in /etc/sudoers with no pass required (CentOS)
+  become: true
+  when: ansible_distribution == "Ubuntu"
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^dryan ALL\='
+    line: 'dryan ALL=(ALL) NOPASSWD:ALL'
+
+- name: Add dryan .bashrc
+  become: true
+  copy:
+    src: ../../files/misc/bashrc
+    dest: /home/dryan/.bashrc
+    owner: dryan
+
+- name: Add dryan dircolors
+  become: true
+  copy:
+    src: ../../files/misc/bashrc
+    dest: /home/dryan/.dircolors
+    owner: dryan
+
+- name: Create akaufman User
+  become: true
+  user:
+    name: akaufman
+    state: present
+
+- name: Add akaufman User SSH Public Key
+  become: true
+  authorized_key:
+    user: akaufman
+    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHXNWSdnnASCy3RQJZZ6CF25BfITgjAIrWZB+lNCZhzF aaron@foo
+    state: present
+
+- name: Add akaufman key2
+  become: true
+  authorized_key:
+    user: akaufman
+    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXcEqEAMU6QotyBROzOzuidXkqiCAvnI7kY6o7gRiqe aaron@workstation
+    state: present
+
 - name: Ensure akaufman user is in /usr/local/etc/sudoers with no pass required (FreeBSD)
-  remote_user: root
+  become: true
   when: ansible_distribution == "FreeBSD"
   lineinfile:
     dest: /usr/local/etc/sudoers
@@ -105,7 +123,7 @@
     line: 'akaufman ALL=(ALL) NOPASSWD:ALL'
 
 - name: Ensure akaufman user is in /etc/sudoers with no pass required (CentOS)
-  remote_user: root
+  become: true
   when: ansible_distribution == "CentOS"
   lineinfile:
     dest: /etc/sudoers
@@ -113,8 +131,44 @@
     regexp: '^akaufman ALL\='
     line: 'akaufman ALL=(ALL) NOPASSWD:ALL'
 
+- name: Ensure akaufman user is in /etc/sudoers with no pass required (CentOS)
+  become: true
+  when: ansible_distribution == "Ubuntu"
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^akaufman ALL\='
+    line: 'akaufman ALL=(ALL) NOPASSWD:ALL'
+
+- name: Add akaufman .bashrc
+  become: true
+  copy:
+    src: ../../files/misc/bashrc
+    dest: /home/akaufman/.bashrc
+    owner: akaufman
+
+- name: Add akaufman dircolors
+  become: true
+  copy:
+    src: ../../files/misc/bashrc
+    dest: /home/akaufman/.dircolors
+    owner: akaufman
+
+- name: Create mcarny User
+  become: true
+  user:
+    name: mczarny
+    state: present
+
+- name: Add mczarny User SSH Public Key
+  become: true
+  authorized_key:
+    user: mczarny
+    key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC76OPgktAxorkY0sTs04r+yoVnZTyiwDmgZmKbThnuizFEncR8oK9h57I1fSH/v18RojiUyCakW+lcpa/4zcJ9YEMn52okeWIgKx01rDORSO2Su675Pn+CeZm3WuXeEzL0eF/lPEbbfFUyqTtpzUHn70G3v62Wb2Vj4ZrxGUEK+1vbfOHtlDic4vKzbtC3NqwiO9AtgpgdIsHGOMO0W3FyxaTiD8rsmIr/FNHkm7UfDNuLBj+SkmO/ZrusowEFs1if/t33rbp2sNnvl6g5sOtJ+mz8lYxY0NR+yYCLUyvTAz+i0DsEAORTaN5uH+5saLmJlDSv/9TlmjjmBs82fMKxmGEA4dc/Si0t1DYXKnsXpDbUM52JRqsytZPdLOeszkTicMRmY8BBJ64zR3gXql14XKbkQHXP9gKJQSmjhlLTPXKSzL5u3kY6t3neTXdJeBlJUCIbyYc2R6vBevggEnr/E2DV9TN2n9bYdkma58jYk+geeguOQI8+rmgwzOQTa3Hh7Cjt3FMU5vHP0Tikdq79EVtOEE/NBodJ5L+np3iQnqEOnjKQWK+i77FXRWuU27FgLIrv2EF/etI6tsXuDF5sSFhy1cBVbbwGoKhLgUZMII/8FoxfaGX3qaXLCb62hUT9b9HP9ZToaavtCaBupgUSgYhN2wlx9ZyuGpO2hdKAPQ== me@r3lik.com
+    state: present
+
 - name: Ensure mczarny user is in /usr/local/etc/sudoers with no pass required (FreeBSD)
-  remote_user: root
+  become: true
   when: ansible_distribution == "FreeBSD"
   lineinfile:
     dest: /usr/local/etc/sudoers
@@ -123,7 +177,7 @@
     line: 'mczarny ALL=(ALL) NOPASSWD:ALL'
 
 - name: Ensure mczarny user is in /etc/sudoers with no pass required (CentOS)
-  remote_user: root
+  become: true
   when: ansible_distribution == "CentOS"
   lineinfile:
     dest: /etc/sudoers
@@ -131,8 +185,31 @@
     regexp: '^mczarny ALL\='
     line: 'mczarny ALL=(ALL) NOPASSWD:ALL'
 
+- name: Ensure mczarny user is in /etc/sudoers with no pass required (CentOS)
+  become: true
+  when: ansible_distribution == "Ubuntu"
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^mczarny ALL\='
+    line: 'mczarny ALL=(ALL) NOPASSWD:ALL'
+
+- name: Add mczarny .bashrc
+  become: true
+  copy:
+    src: ../../files/misc/bashrc
+    dest: /home/mczarny/.bashrc
+    owner: mczarny
+
+- name: Add mczarny dircolors
+  become: true
+  copy:
+    src: ../../files/misc/bashrc
+    dest: /home/mczarny/.dircolors
+    owner: mczarny
+
 - name: Disable Root Login
-  remote_user: root
+  become: true
   lineinfile:  
     dest: /etc/ssh/sshd_config
     state: present
@@ -141,7 +218,7 @@
   register: ssh_config
 
 - name: Remove without password
-  remote_user: root
+  become: true
   lineinfile:
     dest: /etc/ssh/sshd_config
     state: absent
@@ -149,7 +226,7 @@
   register: ssh_config
 
 - name: Disable Password Authentication
-  remote_user: root
+  become: true
   lineinfile:
     dest: /etc/ssh/sshd_config
     state: present
@@ -159,15 +236,14 @@
   register: ssh_config
 
 - name: Copy over 310 Networks SSH Welcome Banner
-  remote_user: root
+  become: true
   copy:
-    src: /etc/ansible/files/misc/sshd-banner
+    src: ../../files/misc/sshd-banner
     dest: /etc/ssh/sshd-banner
     owner: root
-    group: wheel
 
 - name: Use 310 Networks SSH Banner
-  remote_user: root
+  become: true
   lineinfile:
     dest: /etc/ssh/sshd_config
     state: present
@@ -177,7 +253,7 @@
   register: ssh_config
 
 - name: Restart SSH
-  remote_user: root
+  become: true
   service:
     name: sshd
     state: restarted
